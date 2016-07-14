@@ -1,0 +1,29 @@
+Patch by Patrick Brideau <pbrideau@kronostechnologies.com> for burp 2.0.42, which allow
+restore of backup during a backup.
+
+--- burp-2.0.42/src/server/run_action.c
++++ burp-2.0.42/src/server/run_action.c.restore_nolock
+@@ -422,6 +422,10 @@ static int run_action_server_do(struct async *as, struct sdirs *sdirs,
+ 	if(!strncmp_w(rbuf->buf, "diff "))
+ 		return run_diff(as->asfd, sdirs, cconfs);
+ 
++	if(!strncmp_w(rbuf->buf, "restore ")
++	  || !strncmp_w(rbuf->buf, "verify "))
++		return run_restore(as->asfd, sdirs, cconfs, srestore);
++
+ 	switch((ret=get_lock_sdirs(as->asfd, sdirs)))
+ 	{
+ 		case 0: break; // OK.
+@@ -457,10 +461,6 @@ static int run_action_server_do(struct async *as, struct sdirs *sdirs,
+ 		return ret;
+ 	}
+ 
+-	if(!strncmp_w(rbuf->buf, "restore ")
+-	  || !strncmp_w(rbuf->buf, "verify "))
+-		return run_restore(as->asfd, sdirs, cconfs, srestore);
+-
+ 	if(!strncmp_w(rbuf->buf, "Delete "))
+ 		return run_delete(as->asfd, sdirs, cconfs);
+ 
+-- 
+

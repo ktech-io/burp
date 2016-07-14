@@ -7,6 +7,7 @@ URL:		http://burp.grke.org/
 Source0:	https://github.com/grke/burp/archive/burp-%{version}.tar.gz
 Source1:	burp.init
 Source2:	burp.service
+Patch0:	burp-2.0.42-restore_nolock.patch
 BuildRequires:	librsync-devel, zlib-devel, openssl-devel, ncurses-devel, libacl-devel, uthash, autoconf, automake, libtool, pkgconfig
 Requires:	openssl-perl
 
@@ -21,6 +22,7 @@ backing up Windows computers.
 
 %prep
 %setup -q -n %{name}-%{version}
+%patch0 -p1 -b .restore_nolock
 
 %build
 autoreconf -vif
