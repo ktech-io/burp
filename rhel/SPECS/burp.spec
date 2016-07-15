@@ -1,10 +1,10 @@
 Name:		burp
 Summary:	Burp is a network-based simple yet powerful backup and restore program for Unix and Windows.
-Version:	2.0.36
+Version:	2.0.42
 Release:	1%{?dist}
 License:	GPL
 URL:		http://burp.grke.org/
-Source0:	https://github.com/grke/burp/archive/burp-%{version}.tar.gz
+Source0:	https://github.com/grke/burp/archive/%{version}.tar.gz
 Source1:	burp.init
 Source2:	burp.service
 BuildRequires:	librsync-devel, zlib-devel, openssl-devel, ncurses-devel, libacl-devel, uthash, autoconf, automake, libtool, pkgconfig
@@ -65,6 +65,11 @@ rm -rf %{buildroot}
 %endif
 
 %changelog
+* Thu Jul 14 2016 Patrick Brideau <pbrideau@kronostechnologies.com>
+- Change Version
+- Change source url
+- Version 2.0.42
+
 * Tue Apr 05 2016 Marco Fretz <marco.fretz@vshn.ch>
 - Change Version, Test build for CentOS 7
 - Version 2.0.36
