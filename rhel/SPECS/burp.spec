@@ -1,10 +1,10 @@
 Name:		burp
 Summary:	Burp is a network-based simple yet powerful backup and restore program for Unix and Windows.
-Version:	2.0.44
+Version:	2.0.44_kronos1
 Release:	1%{?dist}
 License:	GPL
 URL:		http://burp.grke.org/
-Source0:	https://github.com/grke/burp/archive/%{version}.tar.gz
+Source0:	https://github.com/ktech-io/burp/archive/%{version}.tar.gz
 Source1:	burp.init
 Source2:	burp.service
 Patch0:	burp-2.0.42-restore_nolock.patch
