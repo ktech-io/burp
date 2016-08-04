@@ -15,38 +15,59 @@
 . /etc/init.d/functions
 
 RETVAL=0
-prog=burp
-burp=${BURP-/usr/sbin/burp}
-pidfile=${PIDFILE-/var/run/burp.server.pid}
-lockfile=${LOCKFILE-/var/lock/subsys/burp}
-conffile=${CONFFILE-/etc/burp/burp-server.conf}
+PATH=/sbin:/usr/sbin:/bin:/usr/bin
+DESC=burp             # Introduce a short description here
+NAME=burp             # Introduce the short server's name here
+DAEMON=/usr/sbin/burp # Introduce the server's location here
+DAEMON_ARGS=""        # Arguments to run the daemon with
+SCRIPTNAME=/etc/init.d/$NAME
+CONFIGFILE="/etc/burp/burp-server.conf"
+[ -n "$LOCKFILE" ] || LOCKFILE=/var/lock/subsys/burp
+
+# Function to read CONFIGFILE
+get_conf_val()
+{
+	while IFS='=' read field value ; do
+		field="`echo $field`" ; [ "$field" != "$1" ] && continue
+		echo $value ; break
+	done < $CONFIGFILE
+}
+
+# Read CONFIGFILE to search user, group and pidfile variable for launching
+# burp in good condition.
+BURP_USER=`get_conf_val user`
+BURP_GROUP=`get_conf_val group`
+PIDFILE=`get_conf_val pidfile`
+[ -n "$PIDFILE" ] || PIDFILE=/var/run/burp.server.pid
+[ -n "$BURP_USER" ] || BURP_USER=root
+[ -n "$BURP_GROUP" ] || BURP_GROUP=root
 
 start () {
-    	status -p ${pidfile} ${burp} &>/dev/null && { echo "$prog is already running"; exit 1; }
+	status -p ${PIDFILE} ${DAEMON} &>/dev/null && { echo "$NAME is already running"; exit 1; }
 	echo -n $"Starting $prog: "
-	daemon --pidfile=${pidfile} ${burp} -c ${conffile}
+	daemon --user=${BURP_USER} --pidfile=${PIDFILE} ${DAEMON} -c ${CONFIGFILE} ${DAEMON_ARGS}
 	RETVAL=$?
 	echo
-	[ $RETVAL -eq 0 ] && touch ${lockfile}
+	[ $RETVAL -eq 0 ] && touch ${LOCKFILE}
 }
 stop () {
 	echo -n $"Stopping $prog: "
-	killproc -p ${pidfile} ${prog}
+	killproc -p ${PIDFILE} ${NAME}
 	RETVAL=$?
 	echo
 	if [ $RETVAL -eq 0 ] ; then
-		rm -f ${lockfile} ${pidfile}
+		rm -f ${LOCKFILE} ${PIDFILE}
 	fi
 }
 
 restart () {
-        stop
-        start
+	stop
+	start
 }
 
 reload () {
-	echo -n $"Reloading $prog: "
-	killproc -p ${pidfile} ${prog} -HUP
+	echo -n $"Reloading $NAME: "
+	killproc -p ${PIDFILE} ${NAME} -HUP
 	RETVAL=$?
 	echo
 }
@@ -59,7 +80,7 @@ case "$1" in
 	stop
 	;;
   status)
-	status -p ${pidfile} ${burp}
+	status -p ${PIDFILE} ${DAEMON}
 	RETVAL=$?
 	;;
   restart)
